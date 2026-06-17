@@ -20,9 +20,9 @@
 //   wc.deposet  members: deposet
 //   wc.tensorset members: tensorset
 
-#include "phlex_arrow_common/TableGroup.h"
+#include "phlex_arrow_common/TableGroup.hpp"
 
-#include "wire_cell_phlex/Data.h"
+#include "wire_cell_phlex/Data.hpp"
 
 namespace wire_cell_phlex_arrow {
 

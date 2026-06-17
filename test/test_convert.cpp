@@ -6,7 +6,7 @@
 // round-trips it back to a wcphlex::Frame and verifies the scalars, trace
 // charges, and tags survive.
 
-#include "wire_cell_phlex_arrow/Convert.h"
+#include "wire_cell_phlex_arrow/Convert.hpp"
 
 #include "WireCellAux/SimpleFrame.h"
 #include "WireCellAux/SimpleTrace.h"

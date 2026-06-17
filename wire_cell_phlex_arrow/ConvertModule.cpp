@@ -16,9 +16,9 @@
 // type name itself (e.g. "frame" -> "frame"); routing is unambiguous because
 // the output's creator is this algorithm.
 
-#include "wire_cell_phlex_arrow/Convert.h"
+#include "wire_cell_phlex_arrow/Convert.hpp"
 
-#include "phlex_arrow_common/ConvertNode.h"
+#include "phlex_arrow_common/ConvertNode.hpp"
 
 #include "phlex/module.hpp"
 

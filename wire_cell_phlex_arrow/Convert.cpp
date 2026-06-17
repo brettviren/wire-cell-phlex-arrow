@@ -1,9 +1,9 @@
-#include "wire_cell_phlex_arrow/Convert.h"
+#include "wire_cell_phlex_arrow/Convert.hpp"
 
-#include "wire_cell_arrow/ArrowDepoSet.h"
-#include "wire_cell_arrow/ArrowFrame.h"
-#include "wire_cell_arrow/ArrowTensorSet.h"
-#include "wire_cell_arrow/Converters.h"
+#include "wire_cell_arrow/ArrowDepoSet.hpp"
+#include "wire_cell_arrow/ArrowFrame.hpp"
+#include "wire_cell_arrow/ArrowTensorSet.hpp"
+#include "wire_cell_arrow/Converters.hpp"
 
 #include <memory>
 #include <stdexcept>
