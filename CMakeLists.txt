@@ -79,36 +79,15 @@ enable_testing()
 add_subdirectory(test)
 
 include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
 
+# wire-cell-phlex-arrow is a PURE PLUGIN package: it produces the Phlex convert
+# plugin (dlopen MODULE) plus the implementation library it links.  Its headers
+# are PRIVATE and are deliberately NOT installed, and NO CMake Config is
+# exported — nothing should build against this "final" package; loading the
+# plugin is its only interface.  The implementation .so is still installed
+# because the plugin links it at runtime.
 install(TARGETS wire_cell_phlex_arrow
-  EXPORT wire_cell_phlex_arrowTargets
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 install(TARGETS wire_cell_phlex_arrow_convert
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-install(DIRECTORY wire_cell_phlex_arrow/
-  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/wire_cell_phlex_arrow"
-  FILES_MATCHING PATTERN "*.h")
-
-install(EXPORT wire_cell_phlex_arrowTargets
-  FILE wire_cell_phlex_arrowTargets.cmake
-  NAMESPACE wire_cell_phlex_arrow::
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/wire_cell_phlex_arrow")
-
-# Bundle FindWireCell.cmake so the installed config can re-find WireCell
-# (WireCell ships no CMake config package).
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindWireCell.cmake"
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/wire_cell_phlex_arrow")
-
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/wire_cell_phlex_arrowConfigVersion.cmake"
-  VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion)
-configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/wire_cell_phlex_arrowConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/wire_cell_phlex_arrowConfig.cmake"
-  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/wire_cell_phlex_arrow")
-install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/wire_cell_phlex_arrowConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/wire_cell_phlex_arrowConfigVersion.cmake"
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/wire_cell_phlex_arrow")
