@@ -19,6 +19,7 @@
 #include "wire_cell_phlex_arrow/Convert.hpp"
 
 #include "phlex_arrow_common/ConvertNode.hpp"
+#include "phlex_arrow_common/PhlexTypes.hpp"
 
 #include "phlex/module.hpp"
 
@@ -39,7 +40,7 @@ PHLEX_REGISTER_ALGORITHMS(m, config)
         // optional explicitly (creator/layer accept strings via their setters).
         const product_query in{.creator = creator,
                                .layer = layer,
-                               .suffix = phlex::experimental::identifier{type}};
+                               .suffix = phlex_arrow::identifier{type}};
 
         if (type == "frame") {
             phlex_arrow::register_convert(
