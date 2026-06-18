@@ -65,11 +65,22 @@ target_link_libraries(wire_cell_phlex_arrow
     ${WCPA_RUNTIME_LIBS}
 )
 
-# The Phlex plugin (dlopen MODULE): loading it registers the convert nodes.
+# The Phlex plugins (dlopen MODULEs): the write-direction convert nodes
+# (wcphlex -> TableGroup) and the read-direction convert nodes
+# (TableGroup -> wcphlex).
 add_library(wire_cell_phlex_arrow_convert MODULE
   wire_cell_phlex_arrow/ConvertModule.cpp
 )
 target_link_libraries(wire_cell_phlex_arrow_convert PRIVATE
+  wire_cell_phlex_arrow
+  phlex::module
+  ${WCPA_RUNTIME_LIBS}
+)
+
+add_library(wire_cell_phlex_arrow_from_arrow MODULE
+  wire_cell_phlex_arrow/FromArrowModule.cpp
+)
+target_link_libraries(wire_cell_phlex_arrow_from_arrow PRIVATE
   wire_cell_phlex_arrow
   phlex::module
   ${WCPA_RUNTIME_LIBS}
@@ -90,4 +101,6 @@ install(TARGETS wire_cell_phlex_arrow
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 install(TARGETS wire_cell_phlex_arrow_convert
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+install(TARGETS wire_cell_phlex_arrow_from_arrow
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
