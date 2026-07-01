@@ -37,7 +37,7 @@ PHLEX_REGISTER_ALGORITHMS(m, config)
 
     for (const auto& type : types) {
         const std::string name = "wc_" + type + "_from_arrow";
-        const product_query in{.creator = creator,
+        const product_selector in{.creator = creator,
                                .layer = layer,
                                .suffix = phlex_arrow::identifier{type}};
 

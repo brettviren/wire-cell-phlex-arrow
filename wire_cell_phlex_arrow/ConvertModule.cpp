@@ -38,7 +38,7 @@ PHLEX_REGISTER_ALGORITHMS(m, config)
         const std::string name = "wc_" + type + "_to_arrow";
         // identifier's std::string ctor is explicit, so build the suffix
         // optional explicitly (creator/layer accept strings via their setters).
-        const product_query in{.creator = creator,
+        const product_selector in{.creator = creator,
                                .layer = layer,
                                .suffix = phlex_arrow::identifier{type}};
 
