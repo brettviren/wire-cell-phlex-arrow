@@ -8,7 +8,8 @@
 //
 // Config keys:
 //   types         (array of strings, optional): which of {frame,deposet,
-//                 tensorset} to convert.  Default: all three.
+//                 tensorset,tracksegmentset} to convert.  Default:
+//                 frame,deposet,tensorset.
 //   input_creator (string, optional):  creator of the input TableGroup products
 //                 (the read source's output_creator).  Default "input".
 //   input_layer   (string, required):  Phlex layer of the input products.
@@ -62,6 +63,14 @@ PHLEX_REGISTER_ALGORITHMS(m, config)
               m, name,
               [](phlex_arrow::TableGroup const& g) {
                   return wire_cell_phlex_arrow::tensorset_from_table_group(g);
+              },
+              in, type);
+        }
+        else if (type == "tracksegmentset") {
+            phlex_arrow::register_convert(
+              m, name,
+              [](phlex_arrow::TableGroup const& g) {
+                  return wire_cell_phlex_arrow::tracksegmentset_from_table_group(g);
               },
               in, type);
         }

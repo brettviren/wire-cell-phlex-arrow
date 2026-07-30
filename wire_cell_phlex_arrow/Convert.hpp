@@ -19,6 +19,7 @@
 //   wc.frame    members: traces, frame_tags, trace_tags, cmm
 //   wc.deposet  members: deposet
 //   wc.tensorset members: tensorset
+//   wc.tracksegmentset members: tracksegmentset
 
 #include "phlex_arrow_common/TableGroup.hpp"
 
@@ -37,6 +38,9 @@ phlex_arrow::TableGroup to_table_group(const wcphlex::DepoSet& deposet);
 /// Convert a tensorset to a single-member wc.tensorset TableGroup.
 phlex_arrow::TableGroup to_table_group(const wcphlex::TensorSet& tensorset);
 
+/// Convert a track segment set to a single-member wc.tracksegmentset TableGroup.
+phlex_arrow::TableGroup to_table_group(const wcphlex::TrackSegmentSet& segset);
+
 // ---- read side: TableGroup -> WCT wrapper (Arrow-backed facade) ----
 
 /// Reconstruct a frame from a wc.frame TableGroup using the ArrowFrame facade.
@@ -47,6 +51,22 @@ wcphlex::DepoSet deposet_from_table_group(const phlex_arrow::TableGroup& group);
 
 /// Reconstruct a tensorset from a wc.tensorset TableGroup (ArrowTensorSet).
 wcphlex::TensorSet tensorset_from_table_group(const phlex_arrow::TableGroup& group);
+
+/// Reconstruct a track segment set from a wc.tracksegmentset TableGroup
+/// (ArrowTrackSegmentSet facade).
+wcphlex::TrackSegmentSet tracksegmentset_from_table_group(const phlex_arrow::TableGroup& group);
+
+// ---- edep bridge: edep.observables -> WCT track segments ----
+
+/// Build a track segment set from the 'segments' member (edep.segments schema,
+/// owned by the edep-arrow package) of an edep.observables TableGroup.
+///
+/// ZERO-COPY: the needed columns are projected, renamed to the
+/// wc.tracksegment.* names and re-stamped with the wc.tracksegmentset schema
+/// metadata -- the underlying Arrow arrays are shared, not copied.  A missing
+/// pdg column (pre-v2 edep.segments tables) is filled with zeros.  Extra edep
+/// columns (sd, n_photons, contributors) are dropped from the projection.
+wcphlex::TrackSegmentSet tracksegmentset_from_observables(const phlex_arrow::TableGroup& group);
 
 }  // namespace wire_cell_phlex_arrow
 

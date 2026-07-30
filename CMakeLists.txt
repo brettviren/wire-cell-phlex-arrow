@@ -34,6 +34,7 @@ find_package(WireCell REQUIRED)
 find_package(wire_cell_arrow CONFIG REQUIRED)
 find_package(wire_cell_phlex CONFIG REQUIRED)
 find_package(phlex_arrow_common CONFIG REQUIRED)
+find_package(edep_arrow CONFIG REQUIRED)
 
 # Link the Spack view's gcc15 libstdc++ explicitly (GLIBCXX/CXXABI resolution).
 # Resolve THIS compiler's libstdc++ directly, independent of CMAKE_PREFIX_PATH
@@ -63,6 +64,7 @@ target_link_libraries(wire_cell_phlex_arrow
     wire_cell_arrow::wire_cell_arrow
     wire_cell_phlex::wire_cell_phlex
     phlex_arrow_common::phlex_arrow_common
+    edep_arrow::edep_arrow
     Arrow::arrow_shared
     ${WCPA_RUNTIME_LIBS}
 )
@@ -88,6 +90,16 @@ target_link_libraries(wire_cell_phlex_arrow_from_arrow PRIVATE
   ${WCPA_RUNTIME_LIBS}
 )
 
+# The edep -> WCT track-segment bridge node (segment-sampler chain seam).
+add_library(wire_cell_phlex_arrow_edep_segments MODULE
+  wire_cell_phlex_arrow/EdepSegmentsModule.cpp
+)
+target_link_libraries(wire_cell_phlex_arrow_edep_segments PRIVATE
+  wire_cell_phlex_arrow
+  phlex::module
+  ${WCPA_RUNTIME_LIBS}
+)
+
 enable_testing()
 add_subdirectory(test)
 
@@ -105,4 +117,6 @@ install(TARGETS wire_cell_phlex_arrow
 install(TARGETS wire_cell_phlex_arrow_convert
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 install(TARGETS wire_cell_phlex_arrow_from_arrow
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+install(TARGETS wire_cell_phlex_arrow_edep_segments
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
