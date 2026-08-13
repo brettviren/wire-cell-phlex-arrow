@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Minimal edep-sim optical LAr geometry (xerosere, edep-sim issue #99 follow-up).
+
+  Purpose: a small, fast geometry that produces BOTH ionization electrons and
+  DETECTED optical photons, to exercise edep-sim's optical-photon path (the
+  observables 'photons' table) alongside the field-driven ionization split (the
+  observables 'segments' table).  It is deliberately NOT a physically faithful
+  detector: yields, spectra and geometry are chosen so a low-energy electron
+  makes a modest, quick-to-transport number of photons.
+
+  Key edep-sim conventions exercised:
+    * scalar LArSoft-style "Efield" auxiliary (V/cm) registers the drift field
+      (parsed natively since edep-sim issue #99);
+    * "SegmentDetector" aux on the LAr gives per-step energy segments (electrons);
+    * "SurfaceDetector" aux on the readout plate records optical-photon hits and,
+      as a side effect, edep-sim stops killing optical photons so they transport.
+
+  Optical properties use the Geant4 11 property names (RINDEX,
+  SCINTILLATIONYIELD, SCINTILLATIONYIELD1, SCINTILLATIONCOMPONENT1,
+  SCINTILLATIONTIMECONSTANT1, RESOLUTIONSCALE).  The emission band is placed at
+  ~3 eV (visible) rather than the true 9.7 eV LAr VUV so photons transport
+  without VUV absorption subtleties; again, this is a plumbing test.
+-->
+<!-- No xsi:noNamespaceSchemaLocation: edep-sim reads with validation off, and a
+     schema URL would make Xerces try (and, when offline, fail) to fetch it. -->
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <define>
+    <!-- Refractive index over the optical band (2.5..3.5 eV). -->
+    <matrix name="RINDEX_LAR"  coldim="2" values="2.5*eV 1.38  3.5*eV 1.38"/>
+    <matrix name="RINDEX_PD"   coldim="2" values="2.5*eV 1.50  3.5*eV 1.50"/>
+    <!-- Long absorption in LAr so photons reach the plate; SHORT absorption in
+         the plate so photons that enter are absorbed there, depositing their
+         energy, which is what edep-sim's SurfaceSD requires to record a hit. -->
+    <matrix name="ABS_LAR"     coldim="2" values="2.5*eV 50.0*m  3.5*eV 50.0*m"/>
+    <matrix name="ABS_PD"      coldim="2" values="2.5*eV 0.1*mm  3.5*eV 0.1*mm"/>
+    <!-- Scintillation emission spectrum: peaked near 3 eV. -->
+    <matrix name="SCINT_LAR"   coldim="2" values="2.5*eV 0.1  3.0*eV 1.0  3.5*eV 0.1"/>
+    <!-- Scalars (single-column matrices). -->
+    <matrix name="SCINT_YIELD" coldim="1" values="1000.0"/>
+    <matrix name="YIELD1"      coldim="1" values="1.0"/>
+    <matrix name="RESSCALE"    coldim="1" values="1.0"/>
+    <matrix name="TIMECONST1"  coldim="1" values="6.0*ns"/>
+
+    <rotation name="rIdentity" x="0" y="0" z="0"/>
+  </define>
+
+  <materials>
+    <element name="elVac"   formula="VACUUM" Z="1">  <atom value="1"/>       </element>
+    <element name="argon"   formula="Ar"     Z="18"> <atom value="39.9480"/> </element>
+    <element name="silicon" formula="Si"     Z="14"> <atom value="28.0855"/> </element>
+    <element name="oxygen"  formula="O"      Z="8">  <atom value="15.999"/>  </element>
+
+    <material name="Vacuum" formula="VACUUM">
+      <D value="1.e-25" unit="g/cm3"/>
+      <fraction n="1.0" ref="elVac"/>
+    </material>
+
+    <!-- Liquid argon: pure Ar so edep-sim's DokeBirks treats it as LAr.  No
+         state= is given on purpose (dunecore GDML omits it too); edep-sim now
+         accepts non-gaseous argon. -->
+    <material name="LAr" formula="Ar">
+      <D value="1.40" unit="g/cm3"/>
+      <fraction n="1.0" ref="argon"/>
+      <property name="RINDEX"                     ref="RINDEX_LAR"/>
+      <property name="ABSLENGTH"                  ref="ABS_LAR"/>
+      <property name="SCINTILLATIONYIELD"         ref="SCINT_YIELD"/>
+      <property name="SCINTILLATIONYIELD1"        ref="YIELD1"/>
+      <property name="SCINTILLATIONCOMPONENT1"    ref="SCINT_LAR"/>
+      <property name="SCINTILLATIONTIMECONSTANT1" ref="TIMECONST1"/>
+      <property name="RESOLUTIONSCALE"            ref="RESSCALE"/>
+    </material>
+
+    <!-- Photon-detector plate material: transparent so photons enter and get
+         recorded by the SurfaceDetector. -->
+    <material name="PDGlass" formula="SiO2">
+      <D value="2.20" unit="g/cm3"/>
+      <composite n="1" ref="silicon"/>
+      <composite n="2" ref="oxygen"/>
+      <property name="RINDEX"    ref="RINDEX_PD"/>
+      <property name="ABSLENGTH" ref="ABS_PD"/>
+    </material>
+  </materials>
+
+  <solids>
+    <box name="sWorld" x="1.2" y="1.2" z="1.2" lunit="m"/>
+    <box name="sLAr"   x="1.0" y="1.0" z="1.0" lunit="m"/>
+    <box name="sPD"    x="10.0" y="900.0" z="900.0" lunit="mm"/>
+  </solids>
+
+  <structure>
+    <!-- Readout plate: SurfaceDetector records optical-photon hits. -->
+    <volume name="volPD">
+      <materialref ref="PDGlass"/>
+      <solidref ref="sPD"/>
+      <auxiliary auxtype="SurfaceDetector" auxvalue="PhotonDetector"/>
+    </volume>
+
+    <!-- LAr active volume: energy segments + scalar drift field. -->
+    <volume name="volLAr">
+      <materialref ref="LAr"/>
+      <solidref ref="sLAr"/>
+      <auxiliary auxtype="SegmentDetector" auxvalue="SimEnergyDeposit"/>
+      <auxiliary auxtype="StepLimit" auxunit="cm" auxvalue="0.5*cm"/>
+      <auxiliary auxtype="Efield" auxunit="V/cm" auxvalue="500*V/cm"/>
+      <physvol name="pvPD">
+        <volumeref ref="volPD"/>
+        <position name="posPD" unit="mm" x="450" y="0" z="0"/>
+        <rotationref ref="rIdentity"/>
+      </physvol>
+    </volume>
+
+    <volume name="volWorld">
+      <materialref ref="Vacuum"/>
+      <solidref ref="sWorld"/>
+      <physvol name="pvLAr">
+        <volumeref ref="volLAr"/>
+        <position name="posLAr" unit="mm" x="0" y="0" z="0"/>
+        <rotationref ref="rIdentity"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="volWorld"/>
+  </setup>
+</gdml>
