@@ -7,8 +7,9 @@
 //
 // Config keys:
 //   types         (array of strings, optional): which of {frame,deposet,
-//                 tensorset,tracksegmentset} to convert.  Default:
-//                 frame,deposet,tensorset.
+//                 tensorset,tracksegmentset,blobs} to convert.  Default:
+//                 frame,deposet,tensorset.  (blobs is opt-in via config,
+//                 e.g. types: ['blobs'].)
 //   input_creator (string, optional):  creator of the input WCT products.
 //                 Default "input".
 //   input_layer   (string, required):  Phlex layer of the input products.
@@ -67,6 +68,12 @@ PHLEX_REGISTER_ALGORITHMS(m, config)
               [](wcphlex::TrackSegmentSet const& t) {
                   return wire_cell_phlex_arrow::to_table_group(t);
               },
+              in, type);
+        }
+        else if (type == "blobs") {
+            phlex_arrow::register_convert(
+              m, name,
+              [](wcphlex::BlobSets const& b) { return wire_cell_phlex_arrow::to_table_group(b); },
               in, type);
         }
         else {

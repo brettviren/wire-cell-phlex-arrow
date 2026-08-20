@@ -20,6 +20,7 @@
 //   wc.deposet  members: deposet
 //   wc.tensorset members: tensorset
 //   wc.tracksegmentset members: tracksegmentset
+//   wc.blobs   members: blobs
 
 #include "phlex_arrow_common/TableGroup.hpp"
 
@@ -40,6 +41,9 @@ phlex_arrow::TableGroup to_table_group(const wcphlex::TensorSet& tensorset);
 
 /// Convert a track segment set to a single-member wc.tracksegmentset TableGroup.
 phlex_arrow::TableGroup to_table_group(const wcphlex::TrackSegmentSet& segset);
+
+/// Convert a vector of IBlobSet to a single-member wc.blobs TableGroup.
+phlex_arrow::TableGroup to_table_group(const wcphlex::BlobSets& blobs);
 
 // ---- read side: TableGroup -> WCT wrapper (Arrow-backed facade) ----
 

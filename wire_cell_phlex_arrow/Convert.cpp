@@ -72,6 +72,15 @@ phlex_arrow::TableGroup to_table_group(const wcphlex::TensorSet& tensorset)
     return phlex_arrow::TableGroup{"wc.tensorset", {{"tensorset", *res}}};
 }
 
+phlex_arrow::TableGroup to_table_group(const wcphlex::BlobSets& blobs)
+{
+    auto res = WireCell::Arrow::to_arrow(blobs.items);
+    if (!res.ok()) {
+        throw std::runtime_error("to_table_group(BlobSets): " + res.status().ToString());
+    }
+    return phlex_arrow::TableGroup{"wc.blobs", {{"blobs", *res}}};
+}
+
 // ---- read side ----
 
 wcphlex::Frame frame_from_table_group(const phlex_arrow::TableGroup& group)
