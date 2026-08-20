@@ -76,6 +76,14 @@ PHLEX_REGISTER_ALGORITHMS(m, config)
               [](wcphlex::BlobSets const& b) { return wire_cell_phlex_arrow::to_table_group(b); },
               in, type);
         }
+        else if (type == "cluster") {
+            // A charged-imaging ICluster -> the same wc.blobs schema (blobs
+            // extracted from the cluster's 'b' nodes, with solved/filled charge).
+            phlex_arrow::register_convert(
+              m, name,
+              [](wcphlex::Cluster const& c) { return wire_cell_phlex_arrow::to_table_group(c); },
+              in, type);
+        }
         else {
             throw std::runtime_error("wire-cell-phlex-arrow: unknown convert type '" + type + "'");
         }

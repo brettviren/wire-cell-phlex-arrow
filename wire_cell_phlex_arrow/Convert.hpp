@@ -45,6 +45,10 @@ phlex_arrow::TableGroup to_table_group(const wcphlex::TrackSegmentSet& segset);
 /// Convert a vector of IBlobSet to a single-member wc.blobs TableGroup.
 phlex_arrow::TableGroup to_table_group(const wcphlex::BlobSets& blobs);
 
+/// Convert a 3D-imaging ICluster to the SAME wc.blobs TableGroup, extracting its
+/// 'b' (IBlob) nodes with their solved/filled charge.
+phlex_arrow::TableGroup to_table_group(const wcphlex::Cluster& cluster);
+
 // ---- read side: TableGroup -> WCT wrapper (Arrow-backed facade) ----
 
 /// Reconstruct a frame from a wc.frame TableGroup using the ArrowFrame facade.

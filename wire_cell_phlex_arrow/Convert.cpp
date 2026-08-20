@@ -81,6 +81,15 @@ phlex_arrow::TableGroup to_table_group(const wcphlex::BlobSets& blobs)
     return phlex_arrow::TableGroup{"wc.blobs", {{"blobs", *res}}};
 }
 
+phlex_arrow::TableGroup to_table_group(const wcphlex::Cluster& cluster)
+{
+    auto res = WireCell::Arrow::to_arrow(cluster.ptr);
+    if (!res.ok()) {
+        throw std::runtime_error("to_table_group(Cluster): " + res.status().ToString());
+    }
+    return phlex_arrow::TableGroup{"wc.blobs", {{"blobs", *res}}};
+}
+
 // ---- read side ----
 
 wcphlex::Frame frame_from_table_group(const phlex_arrow::TableGroup& group)
