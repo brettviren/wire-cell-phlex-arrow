@@ -1,0 +1,89 @@
+// smoke-simsp-hdf.jsonnet(.in)
+//
+// SIM+SIGNAL-PROCESSING regression smoke with HDF I/O (xerosere ddm-3bu.9).
+//
+// The HDF-file analog of the WCT BATS test test-pdsp-simsn-nfsp.bats: instead of
+// a WCT "depos" file in and a WCT "frame" file out, this generates ideal-line
+// ionization depos in-process and writes the OmnibusSigProc gauss frame to an
+// arrow-hdf file (wc.frame).  A companion driver (run-simsp-hdf.sh) asserts the
+// SP frame's ROI-trace count is BELOW a per-detector ceiling -- the regression
+// guard for the troi_col_th_factor collection-plane bug (ddm-3bu.9), which would
+// flood the frame with tens of thousands of noise ROIs.
+//
+// Graph (all WCT products flow island->island; the SP frame is tapped to HDF):
+//   edp_line_gen (ideal line)      -> edep.observables (Arrow)
+//     -> wire_cell_phlex_arrow_edep_segments   -> WCT TrackSegmentSet
+//     -> wcph_tracksegmentset_to_frame          -> WCT Frame (sampler -> drift ->
+//        sim -> OmnibusSigProc; dune/wct/job/sim-sigproc.jsonnet input=tracksegmentset)
+//     -> wire_cell_phlex_arrow_convert (frame)  -> phlex_arrow_hdf_output
+//
+// Tokens @DETECTOR@ / @CENTER@ / @SP_WIENER@ / @OUT@ are substituted by
+// run-simsp-hdf.sh (phlex has no TLA/ext-var support).
+
+local deg = 3.141592653589793 / 180.0;
+local det        = '@DETECTOR@';    // 'pdsp' | 'pdhd' | 'pdvd'
+local center     = @CENTER@;        // mm, inside det anode-0 drift volume
+local sp_wiener  = '@SP_WIENER@';   // 'native' | 'narrow' (PDHD induction; ddm-3bu.9)
+
+// A modest fan of directions keeps a few 0.5 m lines inside APA0's drift volume.
+local theta_xz_deg = [0, 30, 60, 85];
+
+{
+  driver: {
+    cpp: 'generate_layers',
+    layers: {
+      event: { parent: 'job', total: std.length(theta_xz_deg), starting_number: 0 },
+    },
+  },
+
+  sources: {
+    lines: {
+      cpp: 'edp_line_gen',
+      output_layer: 'event',
+      center: center,
+      length: 500.0,                      // mm (0.5 m)
+      theta_y: [90 * deg for t in theta_xz_deg],
+      theta_xz: [t * deg for t in theta_xz_deg],
+      coords: 'global',
+    },
+  },
+
+  modules: {
+    // Arrow edep.segments -> WCT TrackSegmentSet
+    segs: {
+      cpp: 'wire_cell_phlex_arrow_edep_segments',
+      input_layer: 'event',
+      input_creator: 'input',      // edp_line_gen's provider creator label
+      input_suffix: 'observables',
+    },
+
+    // WCT: TrackSegmentSampler -> drift -> sim -> OmnibusSigProc -> Frame.
+    // The sp_wiener TLA selects PDHD's Wiener set (native/narrow); pdsp/pdvd
+    // ignore it.
+    frame: {
+      cpp: 'wcph_tracksegmentset_to_frame',
+      wct_config: 'dune/wct/job/sim-sigproc.jsonnet',
+      wct_plugins: ['WireCellPgraph', 'WireCellGen', 'WireCellSigProc', 'WireCellAux'],
+      inputs: [{ creator: 'segs', layer: 'event', suffix: 'tracksegmentset' }],
+      outputs: [{ suffix: 'frame' }],
+      wct_tla: {
+        detector: det,
+        anode_index: '0',
+        input: 'tracksegmentset',
+        sp_wiener: sp_wiener,
+      },
+    },
+
+    // Convert the SP frame to Arrow and persist to HDF5.
+    to_arrow_frame: {
+      cpp: 'wire_cell_phlex_arrow_convert',
+      input_layer: 'event',
+      input_creator: 'frame',
+      types: ['frame'],
+    },
+    hdf_out: {
+      cpp: 'phlex_arrow_hdf_output',
+      output_file: '@OUT@',
+    },
+  },
+}
