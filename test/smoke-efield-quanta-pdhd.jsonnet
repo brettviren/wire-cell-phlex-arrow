@@ -36,6 +36,7 @@
   // The @GDML@ token is substituted by run-efield-quanta-fullchain.sh with the
   // path of the unmodified reference dunecore GDML.
 
+  stage: 'smoke-efield-quanta-pdhd',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

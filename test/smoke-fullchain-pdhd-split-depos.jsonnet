@@ -26,6 +26,7 @@
   // the persisted depos are exactly those frame_sim drifted internally (drift
   // fluctuation is on) — without perturbing frame_sim's shared bare-name rng.
 
+  stage: 'smoke-fullchain-pdhd-split-depos',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

@@ -43,6 +43,7 @@
   //   B: x = -1400 mm, t = 250 us; dir [0, 1, -1]
   // (Both x are inside APA0 face-0 drift volume, anode ~ -3521 mm, cathode ~ 0.)
 
+  stage: 'smoke-fullchain-pdhd-multi-events',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

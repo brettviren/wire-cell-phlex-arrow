@@ -23,6 +23,7 @@ local det = 'pdhd';
 local ai = '0';
 
 {
+  stage: 'smoke-imaging-pdhd',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: { event: { parent: 'job', total: 1, starting_number: 0 } },

@@ -22,6 +22,7 @@
   // The @GDML@ token is substituted by run-quanta-fullchain.sh with the path of
   // the preprocessed GDML written into the test workdir.
 
+  stage: 'smoke-quanta-pdhd',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

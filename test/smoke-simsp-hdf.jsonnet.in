@@ -29,6 +29,7 @@ local sp_wiener  = '@SP_WIENER@';   // 'native' | 'narrow' (PDHD induction; ddm-
 local theta_xz_deg = [0, 30, 60, 85];
 
 {
+  stage: 'smoke-simsp-hdf',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

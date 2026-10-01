@@ -22,14 +22,13 @@ endif()
 
 add_compile_options(-Wall -Wpedantic -Werror)
 
-# Dependencies.  Find phlex's un-found-dependency deps (TBB/Boost/spdlog) and
-# Arrow before phlex; then the wire-cell-arrow converters, the wire-cell-phlex
-# wrappers, and the Phlex Arrow glue.
+# Dependencies: Arrow, phlex (>= 0.4.1, whose config finds its own deps), then
+# the wire-cell-arrow converters, the wire-cell-phlex wrappers, and the Phlex
+# Arrow glue.
 find_package(Arrow CONFIG REQUIRED)
-find_package(TBB REQUIRED)
 find_package(Boost REQUIRED COMPONENTS json)
-find_package(spdlog REQUIRED)
-find_package(phlex REQUIRED)
+find_package(phlex 0.4.1 REQUIRED)
+include(GNUInstallDirs)
 find_package(WireCell REQUIRED)
 find_package(wire_cell_arrow CONFIG REQUIRED)
 find_package(wire_cell_phlex CONFIG REQUIRED)

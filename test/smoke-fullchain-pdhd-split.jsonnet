@@ -21,6 +21,7 @@
   // FieldResponse, elec) via bare names (service_prefix default ""), same as
   // wire-cell-phlex test/sim-sigproc-workflow.jsonnet.in.
 
+  stage: 'smoke-fullchain-pdhd-split',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

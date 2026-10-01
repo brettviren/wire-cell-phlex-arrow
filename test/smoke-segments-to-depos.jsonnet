@@ -13,6 +13,7 @@
   // Requires WIRECELL_PATH to include wire-cell-phlex/cfg (the sampler WCT
   // graph) and the WCT share/wirecell (wirecell.jsonnet); see run-smoke.sh.
 
+  stage: 'smoke-segments-to-depos',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

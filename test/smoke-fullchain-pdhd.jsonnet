@@ -10,6 +10,7 @@
   // The gun fires along +z through the TPC actives at y=200cm (inside the
   // PDHD active volume); anode_index selects which APA's frame is simulated.
 
+  stage: 'smoke-fullchain-pdhd',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: {

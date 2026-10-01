@@ -30,6 +30,7 @@
   // The @GDML@ token is substituted by run-optical-photons.sh with the path of
   // optical-lar.gdml (alongside this file).
 
+  stage: 'smoke-optical-photons',  // the job's stage name (required since Phlex 0.4)
   driver: {
     cpp: 'generate_layers',
     layers: { event: { parent: 'job', total: 1, starting_number: 0 } },
